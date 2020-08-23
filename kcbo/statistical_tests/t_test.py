@@ -1,7 +1,7 @@
 from kcbo.statistical_tests.utils import StatisticalTest, statistic
 from kcbo.utils import output_templates
 
-import pymc as pm
+import pymc3 as pm
 import numpy as np
 import pandas as pd
 from tabulate import tabulate
@@ -17,7 +17,7 @@ class TTest(StatisticalTest):
         super(type(self), self).__init__(*args, **kwargs)
 
     def initialize_test(self, dataframe, groups=None, groupcol='group', valuecol='value', pooling='default', samples=40000, burns=10000, thin=1, ** kwargs):
-        group_map = lambda x: x[groupcol] in groups
+        def group_map(x): return x[groupcol] in groups
         if groups is None:
             groups = list(dataframe[groupcol].unique())
 
@@ -37,7 +37,7 @@ class TTest(StatisticalTest):
         self.burns = burns
         self.thin = thin
 
-        self.progress_bar = kwargs.get('progress_bar',False)
+        self.progress_bar = kwargs.get('progress_bar', False)
         if self.delay_statistic != True:
             local_vars = locals()
             del local_vars['self']
@@ -66,7 +66,7 @@ class TTest(StatisticalTest):
         if thin is None:
             thin = self.thin
 
-        group_map = lambda x: x[groupcol] in (groups or key)
+        def group_map(x): return x[groupcol] in (groups or key)
 
         if pooling == 'all':
             pooled = df[valuecol]
@@ -214,7 +214,7 @@ def t_test(df, groups=None, groupcol='group', valuecol='value', pooling='default
     groups -- (optional) list of groups to look at. Excluded looks at all groups
     groupcol -- string for indexing dataframe column for groups
     valuecol -- string for indexing dataframe column for values of observations
-    pooling -- strategy for using pooled data in test. 
+    pooling -- strategy for using pooled data in test.
                * 'default' -- uses pairwise pooled data
                * 'all' -- uses pooled data from all groups
     samples -- number of samples to use in MCMC

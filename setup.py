@@ -35,7 +35,7 @@ setup(
     install_requires=[
         "numpy>=1.8",
         "scipy",
-        "pymc",
+        "pymc3",
         "pandas>=0.14",
         "tabulate"
     ],
